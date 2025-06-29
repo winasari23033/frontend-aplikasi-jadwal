@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Kuliah & Tugas - Modern Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    
+    * {
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    :root {
+      --primary: #6366f1;
+      --secondary: #8b5cf6;
+      --accent: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --light: #f8fafc;
+    }
+    
+    body {
+      background: white;
+      min-height: 100vh;
+    }
+    
+    /* Static Cards - No hover animations */
+    .neo-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: none;
+    }
+    
+    .neo-input {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #e2e8f0;
+      transition: border-color 0.2s ease;
+    }
+    
+    .neo-input:focus {
+      border-color: var(--primary);
+      outline: none;
+    }
+    
+    .neo-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      transition: opacity 0.2s ease;
+    }
+    
+    .neo-btn:hover {
+      opacity: 0.9;
+    }
+    
+    /* Static Tab System */
+    .tab-active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+    
+    .tab-inactive {
+      background: rgba(255, 255, 255, 0.9);
+      color: #64748b;
+      border: 2px solid #e2e8f0;
+    }
+    
+    .tab-inactive:hover {
+      background: rgba(255, 255, 255, 1);
+      color: var(--primary);
+    }
+    
+    /* Static Modern Table */
+    .modern-table {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    
+    .table-row {
+      background: rgba(255, 255, 255, 0.5);
+      border-bottom: 1px solid #e2e8f0;
+      transition: none;
+    }
+    
+    .table-row:hover {
+      background: rgba(248, 250, 252, 0.8);
+    }
+    
+    /* Status Badges */
+    .status-belum {
+      background: linear-gradient(135deg, #6b7280, #9ca3af);
+    }
+    
+    .status-sedang {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+    
+    .status-selesai {
+      background: linear-gradient(135deg, #10b981, #34d399);
+    }
+    
+    /* Static Statistics Cards */
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #e2e8f0;
+      transition: none;
+    }
+    
+    /* Status buttons */
+    .status-btn {
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+    
+    .status-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-btn.active {
+      border-color: white;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+    }
+    
+    /* Toast Static */
+    .toast-modern {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .mobile-stack {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .mobile-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .mobile-text {
+        font-size: 0.875rem;
+      }
+    }
+    
+    /* Static scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 bg-gray-50">
+  
+  <!-- Header -->
+  <header class="relative z-10 mb-8">
+    <div class="neo-card rounded-3xl p-6 md:p-8">
+      <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
+        <div class="text-center lg:text-left">
+          <h1 class="text-6xl md:text-8xl font-black mb-4">
+            <span class="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+              <i class="fas fa-graduation-cap mr-4 text-orange-500"></i>StudyEnth
+            </span>
+          </h1>
+          <p class="text-gray-600 text-xl font-medium">Kelola jadwal kuliah dan tugas dengan smart & modern</p>
+        </div>
+        
+        <nav class="flex flex-wrap gap-3">
+          <button onclick="switchPage('jadwalPage')" id="btnJadwal" class="tab-active px-6 py-3 rounded-2xl font-semibold">
+            <i class="fas fa-calendar-alt mr-2"></i>Jadwal
+          </button>
+          <button onclick="switchPage('tugasPage')" id="btnTugas" class="tab-inactive px-6 py-3 rounded-2xl font-semibold">
+            <i class="fas fa-tasks mr-2"></i>Tugas
+          </button>
+          <button onclick="switchPage('statistikPage')" id="btnStatistik" class="tab-inactive px-6 py-3 rounded-2xl font-semibold">
+            <i class="fas fa-chart-line mr-2"></i>Analytics
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Jadwal Page -->
+  <div id="jadwalPage" class="relative z-10">
+    <!-- Add Schedule Form -->
+    <div class="neo-card rounded-3xl p-6 md:p-8 mb-8">
+      <div class="flex items-center mb-6">
+        <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-3 rounded-2xl mr-4">
+          <i class="fas fa-plus text-white text-xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">Tambah Jadwal Baru</h2>
+      </div>
+      
+      <form id="jadwalForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <input type="text" id="namaMatkul" placeholder="Nama Mata Kuliah" class="neo-input p-4 rounded-2xl text-gray-800 placeholder-gray-500" required>
+        <input type="text" id="namaDosen" placeholder="Nama Dosen" class="neo-input p-4 rounded-2xl text-gray-800 placeholder-gray-500" required>
+        <select id="hariMatkul" class="neo-input p-4 rounded-2xl text-gray-800" required>
+          <option value="">Pilih Hari</option>
+          <option value="Senin">Senin</option>
+          <option value="Selasa">Selasa</option>
+          <option value="Rabu">Rabu</option>
+          <option value="Kamis">Kamis</option>
+          <option value="Jumat">Jumat</option>
+          <option value="Sabtu">Sabtu</option>
+          <option value="Minggu">Minggu</option>
+        </select>
+        <input type="text" id="jamMatkul" placeholder="08.00 - 09.40" class="neo-input p-4 rounded-2xl text-gray-800 placeholder-gray-500" required>
+        <button type="submit" class="neo-btn text-white px-6 py-4 rounded-2xl font-semibold">
+          <i class="fas fa-plus mr-2"></i>Tambah Jadwal
+        </button>
+      </form>
+    </div>
+
+    <!-- Schedule Table -->
+    <div class="modern-table">
+      <div class="bg-gradient-to-r from-blue-500/20 to-purple-500/20 p-6 border-b border-gray-200">
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+          <i class="fas fa-calendar-check mr-3 text-blue-600"></i>
+          Daftar Jadwal Kuliah
+        </h3>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-book mr-2 text-blue-600"></i>Mata Kuliah
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-user-tie mr-2 text-purple-600"></i>Dosen
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-calendar-day mr-2 text-indigo-600"></i>Hari
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-clock mr-2 text-green-600"></i>Jam
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-cog mr-2 text-orange-600"></i>Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody id="jadwalTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tugas Page -->
+  <div id="tugasPage" class="relative z-10 hidden">
+    <!-- Add Task Form -->
+    <div class="neo-card rounded-3xl p-6 md:p-8 mb-8">
+      <div class="flex items-center mb-6">
+        <div class="bg-gradient-to-r from-green-500 to-teal-500 p-3 rounded-2xl mr-4">
+          <i class="fas fa-plus text-white text-xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">Tambah Tugas Baru</h2>
+      </div>
+      
+      <form id="tugasForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <input type="text" id="tugasMatkul" placeholder="Nama Mata Kuliah" class="neo-input p-4 rounded-2xl text-gray-800 placeholder-gray-500" required>
+        <input type="text" id="keteranganTugas" placeholder="Deskripsi Tugas" class="neo-input p-4 rounded-2xl text-gray-800 placeholder-gray-500" required>
+        <input type="date" id="deadlineTugas" class="neo-input p-4 rounded-2xl text-gray-800 placeholder-gray-500" required>
+        <button type="submit" class="neo-btn text-white px-6 py-4 rounded-2xl font-semibold">
+          <i class="fas fa-plus mr-2"></i>Tambah Tugas
+        </button>
+      </form>
+    </div>
+
+    <!-- Tasks Table -->
+    <div class="modern-table">
+      <div class="bg-gradient-to-r from-green-500/20 to-teal-500/20 p-6 border-b border-gray-200">
+        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+          <i class="fas fa-list-check mr-3 text-green-600"></i>
+          Daftar Tugas
+        </h3>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200">
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-book mr-2 text-blue-600"></i>Mata Kuliah
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-file-alt mr-2 text-purple-600"></i>Tugas
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-calendar-times mr-2 text-red-600"></i>Deadline
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-flag mr-2 text-yellow-600"></i>Status
+              </th>
+              <th class="px-6 py-4 text-left font-semibold text-gray-700">
+                <i class="fas fa-cog mr-2 text-orange-600"></i>Aksi
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tugasTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statistics Page -->
+  <div id="statistikPage" class="relative z-10 hidden">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="stat-card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Total Mata Kuliah</p>
+            <p class="text-3xl font-bold text-gray-800" id="totalMatkul">0</p>
+          </div>
+          <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-4 rounded-2xl">
+            <i class="fas fa-book text-white text-2xl"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Total Tugas</p>
+            <p class="text-3xl font-bold text-gray-800" id="totalTugas">0</p>
+          </div>
+          <div class="bg-gradient-to-r from-green-500 to-teal-500 p-4 rounded-2xl">
+            <i class="fas fa-tasks text-white text-2xl"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Tugas Selesai</p>
+            <p class="text-3xl font-bold text-gray-800" id="tugasSelesai">0</p>
+          </div>
+          <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-4 rounded-2xl">
+            <i class="fas fa-check-circle text-white text-2xl"></i>
+          </div>
+        </div>
+      </div>
+      
+      <div class="stat-card rounded-3xl p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Completion Rate</p>
+            <p class="text-3xl font-bold text-gray-800" id="completionRate">0%</p>
+          </div>
+          <div class="bg-gradient-to-r from-yellow-500 to-orange-500 p-4 rounded-2xl">
+            <i class="fas fa-chart-line text-white text-2xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Overview -->
+    <div class="neo-card rounded-3xl p-6 md:p-8">
+      <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fas fa-chart-bar mr-3 text-blue-600"></i>
+        Status Overview
+      </h3>
+      <div class="space-y-6" id="statusChart"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed top-6 right-6 toast-modern px-6 py-4 rounded-2xl transform translate-x-full transition-all duration-500 z-50">
+    <div class="flex items-center">
+      <i class="fas fa-check-circle mr-3 text-green-600"></i>
+      <span id="toastMessage" class="text-gray-700 font-medium">Success!</span>
+    </div>
+  </div>
+
+  <script>
+    // In-memory storage instead of localStorage
+    let database = {
+      jadwal: [],
+      tugas: []
+    };
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      const icon = toast.querySelector('i');
+      
+      toastMessage.textContent = message;
+      
+      if (type === 'success') {
+        icon.className = 'fas fa-check-circle mr-3 text-green-600';
+      } else if (type === 'error') {
+        icon.className = 'fas fa-exclamation-circle mr-3 text-red-600';
+      }
+      
+      toast.style.transform = 'translateX(0)';
+      
+      setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+      }, 3000);
+    }
+
+    function switchPage(page) {
+      const pages = ['jadwalPage', 'tugasPage', 'statistikPage'];
+      const buttons = ['btnJadwal', 'btnTugas', 'btnStatistik'];
+      
+      pages.forEach(p => document.getElementById(p).classList.add('hidden'));
+      document.getElementById(page).classList.remove('hidden');
+      
+      buttons.forEach(btn => {
+        const element = document.getElementById(btn);
+        element.className = element.className.replace('tab-active', 'tab-inactive');
+      });
+      
+      const activeBtn = page === 'jadwalPage' ? 'btnJadwal' : 
+                       page === 'tugasPage' ? 'btnTugas' : 'btnStatistik';
+      const activeBtnElement = document.getElementById(activeBtn);
+      activeBtnElement.className = activeBtnElement.className.replace('tab-inactive', 'tab-active');
+      
+      if (page === 'statistikPage') {
+        updateStatistik();
+      }
+    }
+
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    }
+
+    function renderJadwal() {
+      const table = document.getElementById('jadwalTable');
+      table.innerHTML = '';
+      
+      database.jadwal.forEach(item => {
+        const row = document.createElement('tr');
+        row.className = 'table-row';
+        row.innerHTML = `
+          <td class="px-6 py-4 text-gray-800 font-medium">${item.matkul}</td>
+          <td class="px-6 py-4 text-gray-600">${item.dosen}</td>
+          <td class="px-6 py-4 text-gray-600">${item.hari}</td>
+          <td class="px-6 py-4 text-gray-600">${item.jam}</td>
+          <td class="px-6 py-4">
+            <button onclick="hapusJadwal('${item.id}')" class="bg-red-500/20 hover:bg-red-500 text-red-600 hover:text-white px-4 py-2 rounded-xl transition-all duration-300">
+              <i class="fas fa-trash mr-2"></i>Hapus
+            </button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function renderTugas() {
+      const table = document.getElementById('tugasTable');
+      table.innerHTML = '';
+      
+      database.tugas.forEach(item => {
+        const statusInfo = getStatusInfo(item.status);
+        
+        const row = document.createElement('tr');
+        row.className = 'table-row';
+        row.innerHTML = `
+          <td class="px-6 py-4 text-gray-800 font-medium">${item.matkul}</td>
+          <td class="px-6 py-4 text-gray-600">${item.keterangan}</td>
+          <td class="px-6 py-4 text-gray-600">${item.deadline}</td>
+          <td class="px-6 py-4">
+            <div class="flex gap-2">
+              <button onclick="updateStatus('${item.id}', 'belum')" class="status-btn ${item.status === 'belum' ? 'active' : ''} status-belum text-white px-3 py-2 rounded-lg text-sm font-medium">
+                <i class="fas fa-pause mr-1"></i>Belum
+              </button>
+              <button onclick="updateStatus('${item.id}', 'sedang')" class="status-btn ${item.status === 'sedang' ? 'active' : ''} status-sedang text-white px-3 py-2 rounded-lg text-sm font-medium">
+                <i class="fas fa-play mr-1"></i>Sedang
+              </button>
+              <button onclick="updateStatus('${item.id}', 'selesai')" class="status-btn ${item.status === 'selesai' ? 'active' : ''} status-selesai text-white px-3 py-2 rounded-lg text-sm font-medium">
+                <i class="fas fa-check mr-1"></i>Selesai
+              </button>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <button onclick="hapusTugas('${item.id}')" class="bg-red-500/20 hover:bg-red-500 text-red-600 hover:text-white px-4 py-2 rounded-xl transition-all duration-300">
+              <i class="fas fa-trash mr-2"></i>Hapus
+            </button>
+          </td>
+        `;
+        table.appendChild(row);
+      });
+    }
+
+    function getStatusInfo(status) {
+      const statusMap = {
+        'belum': {
+          class: 'status-belum',
+          text: 'Belum Dikerjakan',
+          icon: 'fas fa-pause'
+        },
+        'sedang': {
+          class: 'status-sedang',
+          text: 'Sedang Dikerjakan',
+          icon: 'fas fa-play'
+        },
+        'selesai': {
+          class: 'status-selesai',
+          text: 'Selesai',
+          icon: 'fas fa-check'
+        }
+      };
+      return statusMap[status] || statusMap['belum'];
+    }
+
+    function updateStatus(id, status) {
+      const tugas = database.tugas.find(t => t.id === id);
+      if (tugas) {
+        tugas.status = status;
+        renderTugas();
+        const statusText = getStatusInfo(status).text;
+        showToast(`Status tugas diubah menjadi "${statusText}"`);
+      }
+    }
+
+    function updateStatistik() {
+      document.getElementById('totalMatkul').textContent = database.jadwal.length;
+      document.getElementById('totalTugas').textContent = database.tugas.length;
+      
+      const tugasSelesai = database.tugas.filter(t => t.status === 'selesai').length;
+      document.getElementById('tugasSelesai').textContent = tugasSelesai;
+      
+      const completionRate = database.tugas.length > 0 ? Math.round((tugasSelesai / database.tugas.length) * 100) : 0;
+      document.getElementById('completionRate').textContent = completionRate + '%';
+      
+      // Update status chart
+      updateStatusChart();
+    }
+
+    function updateStatusChart() {
+      const statusChart = document.getElementById('statusChart');
+      const tugasBelum = database.tugas.filter(t => t.status === 'belum').length;
+      const tugasSedang = database.tugas.filter(t => t.status === 'sedang').length;
+      const tugasSelesai = database.tugas.filter(t => t.status === 'selesai').length;
+      const total = database.tugas.length;
+      
+      statusChart.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full status-belum mr-3"></div>
+              <span class="text-gray-700 font-medium">Belum Dikerjakan</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-gray-600 mr-4">${tugasBelum} tugas</span>
+              <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div class="status-belum h-full rounded-full" style="width: ${total > 0 ? (tugasBelum / total) * 100 : 0}%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full status-sedang mr-3"></div>
+              <span class="text-gray-700 font-medium">Sedang Dikerjakan</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-gray-600 mr-4">${tugasSedang} tugas</span>
+              <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div class="status-sedang h-full rounded-full" style="width: ${total > 0 ? (tugasSedang / total) * 100 : 0}%"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-4 h-4 rounded-full status-selesai mr-3"></div>
+              <span class="text-gray-700 font-medium">Selesai</span>
+            </div>
+            <div class="flex items-center">
+              <span class="text-gray-600 mr-4">${tugasSelesai} tugas</span>
+              <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div class="status-selesai h-full rounded-full" style="width: ${total > 0 ? (tugasSelesai / total) * 100 : 0}%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    document.getElementById('jadwalForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const matkul = document.getElementById('namaMatkul').value;
+      const dosen = document.getElementById('namaDosen').value;
+      const hari = document.getElementById('hariMatkul').value;
+      const jam = document.getElementById('jamMatkul').value;
+      
+      database.jadwal.push({
+        id: generateId(),
+        matkul: matkul,
+        dosen: dosen,
+        hari: hari,
+        jam: jam
+      });
+      
+      renderJadwal();
+      this.reset();
+      showToast('Jadwal berhasil ditambahkan!');
+    });
+
+    document.getElementById('tugasForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const matkul    = document.getElementById('tugasMatkul').value;
+      const keterangan = document.getElementById('keteranganTugas').value;
+      const deadline   = document.getElementById('deadlineTugas').value;
+
+      database.tugas.push({
+        id: generateId(),
+        matkul: matkul,
+        keterangan: keterangan,
+        deadline: deadline,
+        status: 'belum'
+      });
+
+      renderTugas();
+      this.reset();
+      showToast('Tugas berhasil ditambahkan!');
+    });  <!-- ← Tutup function dan addEventListener di sini -->
+
+  </script>  <!-- ← Tambahkan penutup script di sini -->
+</body>
+</html>
